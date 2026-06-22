@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>篤 Poo Poo 經典掌機遊戲 (v2)</title>
+    <style>
+        /* 頁面背景變為全黑 */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Courier New', Courier, monospace, "Microsoft JhengHei";
+            user-select: none;
+            overflow: hidden;
+        }
+
+        /* 遊戲機本體：經典掌機白色帶點灰 */
+        .console {
+            background-color: #e2e2e2;
+            border: 4px solid #bcbcbc;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: inset -5px -5px 0px #b5b5b5, inset 5px 5px 0px #ffffff, 0 10px 30px rgba(0,0,0,0.5);
+            width: 360px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        /* 頂部裝飾條線 */
+        .console-header {
+            width: 100%;
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+
+        /* 顯示器外邊框：依要求修改為黃色 */
+        .screen-container {
+            background-color: #f1c40f; /* 黃色邊框 */
+            padding: 12px;
+            border-radius: 8px;
+            border: 3px solid #d4a307; /* 深黃色立體邊緣 */
+            box-shadow: inset 0 5px 10px rgba(0,0,0,0.3);
+            width: 90%;
+            margin-bottom: 30px;
+            box-sizing: border-box;
+        }
+
+        /* 老式電子遊戲綠色顯示屏幕 */
+        .screen {
+            background-color: #8bad1c; 
+            border: 2px solid #5d7412;
+            height: 90px;
+            border-radius: 4px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        /* 得分顯示 */
+        .score-display {
+            position: absolute;
+            top: 4px;
+            right: 8px;
+            font-size: 14px;
+            color: #1c2b05;
+            font-weight: bold;
+        }
+
+        /* 💩 刷新固定位置（3個槽位） */
+        .poo-slot {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .poo-icon {
+            font-size: 38px;
+            line-height: 1;
+            display: none;
+            transition: none !important; 
+        }
+
+        .poo-icon.active {
+            display: block;
+        }
+
+        /* 按鈕容器 */
+        .button-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            width: 95%;
+            justify-items: center;
+        }
+
+        /* 通用按鈕基礎樣式：非點擊時顏色保持鮮豔高飽和度 */
+        .btn {
+            width: 76px;
+            height: 60px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            outline: none;
+            box-sizing: border-box;
+            transition: transform 0.05s, filter 0.1s, box-shadow 0.1s;
+            position: relative;
+            border: 3px solid rgba(0, 0, 0, 0.25);
+            box-shadow: inset 0 4px 4px rgba(255,255,255,0.4), 0 4px 0px rgba(0,0,0,0.2);
+        }
+
+        .btn:active {
+            transform: translateY(3px);
+            box-shadow: inset 0 2px 2px rgba(0,0,0,0.3), 0 1px 0px rgba(0,0,0,0.2);
+        }
+
+        /* 按鈕 1：鮮豔黃色、空心白色1字 */
+        .btn-yellow {
+            background-color: #ffcc00; 
+        }
+        .btn-yellow .btn-text {
+            color: transparent;
+            -webkit-text-stroke: 2px #ffffff;
+            font-size: 32px;
+            font-weight: 900;
+        }
+        /* 點擊時的高亮發光效果 */
+        .btn-yellow.glow, .btn-yellow:active {
+            filter: brightness(1.2);
+            box-shadow: 0 0 25px #ffcc00, inset 0 4px 4px rgba(255,255,255,0.6);
+        }
+
+        /* 按鈕 2：鮮豔藍色、白色的螺旋狀圖標 */
+        .btn-blue {
+            background-color: #2980b9; 
+        }
+        .btn-blue .spiral-icon {
+            width: 28px;
+            height: 28px;
+            fill: none;
+            stroke: #ffffff;
+            stroke-width: 3;
+            stroke-linecap: round;
+        }
+        /* 點擊時的高亮發光效果 */
+        .btn-blue.glow, .btn-blue:active {
+            filter: brightness(1.3);
+            box-shadow: 0 0 25px #3498db, inset 0 4px 4px rgba(255,255,255,0.6);
+        }
+
+        /* 按鈕 3：鮮豔紅色、空心白色2字 */
+        .btn-red {
+            background-color: #e74c3c; 
+        }
+        .btn-red .btn-text {
+            color: transparent;
+            -webkit-text-stroke: 2px #ffffff;
+            font-size: 32px;
+            font-weight: 900;
+        }
+        /* 點擊時的高亮發光效果 */
+        .btn-red.glow, .btn-red:active {
+            filter: brightness(1.2);
+            box-shadow: 0 0 25px #e74c3c, inset 0 4px 4px rgba(255,255,255,0.6);
+        }
+
+        /* 重新開始簡約提示文字 */
+        .toast {
+            position: absolute;
+            top: -50px;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #333;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1.5s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .toast.show {
+            opacity: 1;
+            transition: opacity 0.1s; 
+        }
+        
+        /* 底部操作說明小字 */
+        .instructions {
+            margin-top: 25px;
+            font-size: 11px;
+            color: #777;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="console">
+        <div id="toast" class="toast">遊戲已重新開始</div>
+
+        <div class="console-header">SMARTY PANTS 5</div>
+
+        <div class="screen-container">
+            <div class="screen">
+                <div class="score-display">SCORE: <span id="score">0</span></div>
+                <div class="poo-slot"><div class="poo-icon" id="poo-0">💩</div></div>
+                <div class="poo-slot"><div class="poo-icon" id="poo-1">💩</div></div>
+                <div class="poo-slot"><div class="poo-icon" id="poo-2">💩</div></div>
+            </div>
+        </div>
+
+        <div class="button-container">
+            <button class="btn btn-yellow" onclick="pressButton(0)" id="btn-0">
+                <span class="btn-text">1</span>
+            </button>
+            
+            <button class="btn btn-blue" onclick="pressButton(1)" id="btn-1">
+                <svg class="spiral-icon" viewBox="0 0 24 24">
+                    <path d="M12,2 C17.5,2 22,6.5 22,12 C22,16.5 18.5,20 14,20 C10.5,20 7.5,17.5 7.5,14 C7.5,11.5 9.5,9.5 12,9.5 C13.8,9.5 15,10.8 15,12.5 C15,13.5 14.2,14.2 13.3,14.2 C12.7,14.2 12.3,13.8 12.3,13.3 L12.3,12 C12.3,12.3 12.1,11 11,11 C10.2,11 9.5,11.8 9.5,13 C9.5,14.8 11,16.2 13,16.2 C15.5,16.2 17.8,14 17.8,11.2 C17.8,7.5 14.5,4.5 10.5,4.5 C6,4.5 3.5,8 3.5,12.5" />
+                </svg>
+            </button>
+            
+            <button class="btn btn-red" onclick="pressButton(2)" id="btn-2">
+                <span class="btn-text">2</span>
+            </button>
+        </div>
+
+        <div class="instructions">鍵盤 [ R ] 鍵：完全重設整個遊戲及分數</div>
+    </div>
+
+    <script>
+        let score = 0;
+        let currentPooIndex = -1;
+        let toastTimeout;
+
+        // 隨機生成 💩 位置，並且絕對不與上一次位置相同
+        function spawnPoo() {
+            if (currentPooIndex !== -1) {
+                document.getElementById(`poo-${currentPooIndex}`).classList.remove('active');
+            }
+
+            let nextIndex;
+            do {
+                nextIndex = Math.floor(Math.random() * 3);
+            } while (nextIndex === currentPooIndex);
+
+            currentPooIndex = nextIndex;
+            document.getElementById(`poo-${currentPooIndex}`).classList.add('active');
+        }
+
+        // 點擊按鈕邏輯
+        function pressButton(index) {
+            const btn = document.getElementById(`btn-${index}`);
+            
+            // 觸發發光視覺效果
+            btn.classList.add('glow');
+            setTimeout(() => btn.classList.remove('glow'), 150);
+
+            if (index === currentPooIndex) {
+                // 成功消除：加 1 分，刷新位置
+                score++;
+                document.getElementById('score').innerText = score;
+                spawnPoo();
+            }
+            // 依照要求：已刪除原本點錯按鈕時會執行隨機重新刷新的 else 代碼段
+        }
+
+        // 鍵盤按下 R 鍵完全重設邏輯
+        window.addEventListener('keydown', function(event) {
+            if (event.key === 'r' || event.key === 'R') {
+                // 連同分數也一起重設為 0
+                score = 0;
+                document.getElementById('score').innerText = score;
+
+                // 重新隨機生成位置
+                spawnPoo();
+
+                // 顯示簡約提示文字
+                const toast = document.getElementById('toast');
+                clearTimeout(toastTimeout);
+                
+                toast.classList.remove('show');
+                void toast.offsetWidth; // 強制重繪
+                
+                toast.classList.add('show');
+
+                // 隨後緩慢消失
+                toastTimeout = setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 100); 
+            }
+        });
+
+        // 遊戲首次載入
+        spawnPoo();
+    </script>
+</body>
+</html>
